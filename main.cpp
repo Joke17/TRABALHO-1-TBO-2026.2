@@ -3,23 +3,8 @@
 #include<iostream>
 #include<fstream>
 #include <chrono>
+#include <vector>
 
-class Filme
-{
-private:
-    /* data */
-public:
-    Filme(/* args */);
-    ~Filme();
-};
-
-Filme::Filme(/* args */)
-{
-}
-
-Filme::~Filme()
-{
-}
 
 
 class InsertionSort
@@ -46,19 +31,19 @@ InsertionSort::~InsertionSort()
 
 using namespace std;
 
-// class Filme
-// {
-// public:
-//     std::string identificacao;
-//     std::string tipo_do_filme;
-//     std::string titulo_primario;
-//     std::string titulo_original;
-//     bool adulto;
-//     int ano_estreia;
-//     int ano_fim;
-//     int duracao;
-//     std::string genero;
-// };
+class Filme
+{
+public:
+    std::string identificacao;
+    std::string tipo_do_filme;
+    std::string titulo_primario;
+    std::string titulo_original;
+    bool adulto;
+    int ano_estreia;
+    int ano_fim;
+    int duracao;
+    std::string genero;
+};
 
 
 
