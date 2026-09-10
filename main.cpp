@@ -88,10 +88,11 @@ int main(int argc, char const *argv[])
     
     // Lê o arquivo de filmes linha por linha
     while (
-        qtdlinha <= 10 &&
+        // qtdlinha <= 10 &&
         getline(arq_filmes, linha)) {
         if(linhaini == 1) {
             linhaini++;
+            qtdlinha--;
             continue;
         }
 
@@ -122,20 +123,21 @@ int main(int argc, char const *argv[])
 
         filmes.push_back(f);
 
-        cout << linha << endl;
+        // cout << linha << endl;
         qtdlinha++;
 
     }
     // Registra o tempo final
     auto fim_read_filmes = std::chrono::high_resolution_clock::now();
     qtdlinha = 0;
-    linhaini = 0;
+    linhaini = 1;
     auto ini_read_cinemas = std::chrono::high_resolution_clock::now();
     // le o arquivo de cinemas linha por linha
     while (getline(arq_cinemas, linha))
     {
-        if(linhaini == 1) { // pula o cabeçalho
+        if(linhaini == 1) {
             linhaini++;
+            qtdlinha--;
             continue;
         }
         
@@ -152,17 +154,23 @@ int main(int argc, char const *argv[])
         c.ID = campos[0];
         // assert(0);
         c.nome = campos[1];
-        c.coord_X = (campos[2] == "\\N") ? 0 : stod(campos[2]);
-        assert(0);
-        c.coord_Y = (campos[3] == "\\N") ? 0 : stod(campos[3]);
-        c.preco = (campos[4] == "\\N") ? 0 : stod(campos[4]);
-        c.filmes.push_back(campos[5]);
-        c.filmes.push_back(campos[6]);
-        c.filmes.push_back(campos[7]);
+            c.coord_X = (campos[2] == "\\N") ? 0 : stoi(campos[2]);
+            c.coord_Y = (campos[3] == "\\N") ? 0 : stoi(campos[3]);
+            c.preco = (campos[4] == "\\N") ? 0 : stod(campos[4]);
+        // assert(0);
+        for (int i = 0; campos[i] == "\\N"; i++)
+        {
+            c.filmes.push_back(campos[i]);
+        }
+        
+        
+
+        // c.filmes.push_back(campos[6]);
+        // c.filmes.push_back(campos[7]);
 
         cinemas.push_back(c);
 
-        std::cout << linha << endl;
+        // std::cout << linha << endl;
         qtdlinha++;
     }
     auto fim_read_cinemas = std::chrono::high_resolution_clock::now();
