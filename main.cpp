@@ -47,7 +47,7 @@ public:
     int ano_estreia;
     int ano_fim;
     int duracao;
-    std::string genero;
+    vector<string> genero;
 };
 class Cinema{
 public:
@@ -97,7 +97,7 @@ int main(int argc, char const *argv[])
         }
 
 
-        stringstream ss(linha);
+        stringstream ss(linha); // usa stringstream pra converter dps
         string campo;
         vector<string> campos;
 
@@ -119,7 +119,19 @@ int main(int argc, char const *argv[])
         f.ano_estreia       = (campos[5] == "\\N") ? 0 : stoi(campos[5]); // se foe \n vira 0
         f.ano_fim           = (campos[6] == "\\N") ? 0 : stoi(campos[6]);
         f.duracao           = (campos[7] == "\\N") ? 0 : stoi(campos[7]);
-        f.genero            = campos[8];
+
+        // f.genero            = campos[8];
+
+        if (campos[8] != "\\N") {
+            stringstream gens(campos[8]);
+            string g;
+            while (getline(gens, g, ','))
+            {
+                f.genero.push_back(g);
+            }
+        }
+        
+
 
         filmes.push_back(f);
 
@@ -158,7 +170,7 @@ int main(int argc, char const *argv[])
             c.coord_Y = (campos[3] == "\\N") ? 0 : stoi(campos[3]);
             c.preco = (campos[4] == "\\N") ? 0 : stod(campos[4]);
         // assert(0);
-        for (int i = 0; campos[i] == "\\N"; i++)
+        for (int i = 0; campos[i] == "\\N"; i++) // le os filmes exibidos no cinema
         {
             c.filmes.push_back(campos[i]);
         }
