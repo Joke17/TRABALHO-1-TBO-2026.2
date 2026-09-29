@@ -29,10 +29,12 @@ public:
 
 BuscaBinaria::BuscaBinaria(/* args */)
 {
+
 }
 
 BuscaBinaria::~BuscaBinaria()
 {
+
 }
 
 
@@ -65,8 +67,8 @@ int main(int argc, char const *argv[])
 {
     // assert(0);
     // Abre o arquivo para leitura
-    ifstream arq_filmes("filmesCrop.txt");
-    ifstream arq_cinemas("cinemas.txt");
+    ifstream arq_filmes("output/filmesCrop.txt");
+    ifstream arq_cinemas("output/cinemas.txt");
 
     vector <Filme> filmes; 
     vector <Cinema> cinemas; 
@@ -135,7 +137,7 @@ int main(int argc, char const *argv[])
 
         filmes.push_back(f);
 
-        // cout << linha << endl;
+        //cout << linha << endl;
         qtdlinha++;
 
     }
@@ -170,9 +172,17 @@ int main(int argc, char const *argv[])
             c.coord_Y = (campos[3] == "\\N") ? 0 : stoi(campos[3]);
             c.preco = (campos[4] == "\\N") ? 0 : stod(campos[4]);
         // assert(0);
+<<<<<<< HEAD
         for (int i = 0; campos[i] == "\\N"; i++) // le os filmes exibidos no cinema
+=======
+
+        //loop corrigido para add os filmes do cinema 
+        for (size_t i = 5; i < campos.size(); i++)
+>>>>>>> 8086e9ec96172f166ccda04d5f34ce5b2af50bd8
         {
-            c.filmes.push_back(campos[i]);
+            if (campos[i] != "\\N") {
+                c.filmes.push_back(campos[i]);
+            }
         }
         
         
