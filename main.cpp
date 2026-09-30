@@ -174,7 +174,6 @@ int main(int argc, char const *argv[])
         // assert(0);
 <<<<<<< HEAD
         for (int i = 0; campos[i] == "\\N"; i++) // le os filmes exibidos no cinema
-=======
 
         //loop corrigido para add os filmes do cinema 
         for (size_t i = 5; i < campos.size(); i++)
