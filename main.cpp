@@ -41,7 +41,7 @@ BuscaBinaria::~BuscaBinaria()
 class Filme
 {
 public:
-    std::string identificacao;
+    int identificacao;
     std::string tipo_do_filme;
     std::string titulo_primario;
     std::string titulo_original;
@@ -67,8 +67,8 @@ int main(int argc, char const *argv[])
 {
     // assert(0);
     // Abre o arquivo para leitura
-    ifstream arq_filmes("output/filmesCrop.txt");
-    ifstream arq_cinemas("output/cinemas.txt");
+    ifstream arq_filmes("filmesCrop.txt");
+    ifstream arq_cinemas("cinemas.txt");
 
     vector <Filme> filmes; 
     vector <Cinema> cinemas; 
@@ -90,7 +90,7 @@ int main(int argc, char const *argv[])
     
     // Lê o arquivo de filmes linha por linha
     while (
-        // qtdlinha <= 10 &&
+        qtdlinha <= 10 &&
         getline(arq_filmes, linha)) {
         if(linhaini == 1) {
             linhaini++;
@@ -112,7 +112,7 @@ int main(int argc, char const *argv[])
 
         //atriui os trem lido a um filme, e coloca no array
         Filme f;
-        f.identificacao     = campos[0];
+        f.identificacao     = stoi(campos[0].substr(2));
         f.tipo_do_filme     = campos[1];
         f.titulo_primario   = campos[2];
         f.titulo_original   = campos[3];
@@ -137,7 +137,7 @@ int main(int argc, char const *argv[])
 
         filmes.push_back(f);
 
-        //cout << linha << endl;
+        cout << f.identificacao << " " <<f.titulo_original << endl;
         qtdlinha++;
 
     }
@@ -172,15 +172,15 @@ int main(int argc, char const *argv[])
             c.coord_Y = (campos[3] == "\\N") ? 0 : stoi(campos[3]);
             c.preco = (campos[4] == "\\N") ? 0 : stod(campos[4]);
         // assert(0);
-        for (int i = 0; campos[i] == "\\N"; i++) // le os filmes exibidos no cinema
+        for (int i = 0; campos[i] == "\\N"; i++) c.filmes.push_back(campos[i]);// le os filmes exibidos no cinema
 
         //loop corrigido para add os filmes do cinema 
-        for (size_t i = 5; i < campos.size(); i++)
-        {
-            if (campos[i] != "\\N") {
-                c.filmes.push_back(campos[i]);
-            }
-        }
+        // for (size_t i = 5; i < campos.size(); i++)
+        // {
+        //     if (campos[i] != "\\N") {
+        //         c.filmes.push_back(campos[i]);
+        //     }
+        // }
         
         
 
