@@ -226,6 +226,7 @@ int main(int argc, char const *argv[])
 
 
     //teste buca binaria
+    // fazer casos especiais
     int a = BuscaBinaria::BuscaFilme(filmes, 9194990);
     Filme t;
     if(filmes[a].identificacao < 9194990){ // passar por próximo filme
