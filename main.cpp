@@ -11,47 +11,14 @@
 
 using namespace std;
 
-class BuscaBinaria
-{
-private:
-    /* data */
-public:
-    BuscaBinaria(/* args */);
-    ~BuscaBinaria();
-    static int BuscaFilme(const vector<Filme>& filmes, int id_procurado)
-    {
-        int inicio = 0;
-        int fim = filmes.size() - 1;
-        int meio = inicio + (fim - inicio) / 2; // evita overflow, equivalente a (inicio+fim)/2
 
-        while (inicio <= fim)
-        {
+// BuscaBinaria::BuscaBinaria(/* args */)
+// {
+// }
 
-            if (filmes[meio].identificacao == id_procurado)
-            {
-                return meio; // encontrou! retorna o índice
-            }
-            else if (filmes[meio].identificacao < id_procurado)
-            {
-                inicio = meio + 1; // procura na metade direita
-            }
-            else
-            {
-                fim = meio - 1; // procura na metade esquerda
-            }
-        }
-
-        return meio; // não encontrado
-    }
-};
-
-BuscaBinaria::BuscaBinaria(/* args */)
-{
-}
-
-BuscaBinaria::~BuscaBinaria()
-{
-}
+// BuscaBinaria::~BuscaBinaria()
+// {
+// }
 
 class Filme
 {
@@ -76,6 +43,43 @@ public:
     double preco;
     vector<string> filmes;
 };
+
+class BuscaBinaria
+{
+private:
+    /* data */
+public:
+
+    static int BuscaFilme(const vector<Filme>& filmes, int id_procurado)
+    {
+        int inicio = 0;
+        int fim = filmes.size() - 1;
+        int meio = 0;
+
+        while (inicio <= fim)
+        {
+            meio = inicio + (fim - inicio) / 2;   // <-- recalculado a cada iteração, dentro do loop
+
+            if (filmes[meio].identificacao == id_procurado)
+            {
+                return meio;
+            }
+            else if (filmes[meio].identificacao < id_procurado)
+            {
+                inicio = meio + 1;
+            }
+            else
+            {
+                fim = meio - 1;
+            }
+        }
+
+        return meio;
+        // return 0;
+
+    };
+};
+
 
 int main(int argc, char const *argv[])
 {
@@ -106,7 +110,7 @@ int main(int argc, char const *argv[])
 
     // Lê o arquivo de filmes linha por linha
     while (
-        qtdlinha <= 10 &&
+        // qtdlinha <= 10 &&
         getline(arq_filmes, linha))
     {
         if (linhaini == 1)
@@ -155,7 +159,7 @@ int main(int argc, char const *argv[])
 
         filmes.push_back(f);
 
-        cout << f.identificacao << " " << f.titulo_original << endl;
+        // cout << f.identificacao << " " << f.titulo_original << endl;
         qtdlinha++;
     }
     // Registra o tempo final
@@ -219,6 +223,18 @@ int main(int argc, char const *argv[])
     cout << "---------------------------------------------------------------------------------------------------------------------------" << endl;
     std::cout << "Leitura filmes: " << duracao_read_filmes.count() << " ms " << "Filmes lidos: " << filmes.size() << std::endl;
     std::cout << "Leitura cinemas: " << duracao_read_cinemas.count() << " ms " << "Cinemas lidos: " << cinemas.size() << std::endl;
+
+
+    //teste buca binaria
+    int a = BuscaBinaria::BuscaFilme(filmes, 9194990);
+    Filme t;
+    if(filmes[a].identificacao < 9194990){ // passar por próximo filme
+        t = filmes[a+1];    // se o achado da busca bin for anterior, passa pro prox
+    }else{
+        t = filmes[a]; // se a busc bin não retornou menor, ou é o certo ou ja é o próximo
+    }
+
+    cout << t.identificacao << endl;
 
     // Fecha o arquivo
 
