@@ -26,7 +26,7 @@ int Buscador::buscarSucessorID(int id_procurado) {
 
     //  o id procurado eh maior que o ultimo filme da base
     if (id_procurado > filmes[fim].identificacao) {
-        return fim; // Retorna o maior possível
+        return fim; // retorna o maior possível
     }
 
     while (inicio <= fim) {
