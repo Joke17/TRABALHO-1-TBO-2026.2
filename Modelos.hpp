@@ -26,7 +26,7 @@ public:
     double coord_X;
     double coord_Y;
     double preco;
-    vector<int> filmes_ids; // Agora guarda IDs inteiros em vez de strings
+    vector<int> filmes_ids; // agora guarda ids inteiros em vez de strings
 };
 
 #endif
