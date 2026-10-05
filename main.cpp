@@ -1,65 +1,128 @@
 #include "Buscador.hpp"
 #include <iostream>
 #include <chrono>
+#include <iomanip>
+#include <limits>
+
+//g++ main.cpp Buscador.cpp -o meutrabalho.exe
+//.\meutrabalho.exe
 
 using namespace std;
+
+// func aux para limpar o buffer do teclado
+void limparBuffer() {
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+}
 
 int main() {
     Buscador sistema;
 
-    cout << "Carregando dados e construindo indices (Arvores e Pre-processamento)..." << endl;
+    cout << "carregando a base de dados e indices...\n";
+   
     auto ini_read = chrono::high_resolution_clock::now();
+    
     
     sistema.carregarDados("dados/filmesCrop.txt", "dados/cinemas.txt");
     
     auto fim_read = chrono::high_resolution_clock::now();
-    chrono::duration<double, milli> duracao = (fim_read - ini_read);
-    cout << "Dados carregados em: " << duracao.count() << " ms." << endl;
-    cout << "--------------------------------------------------------" << endl;
+    cout << "carregamento concluido em: " << fixed << setprecision(2) 
+         << chrono::duration<double, milli>(fim_read - ini_read).count() << " ms.\n\n";
 
-    // teste modulo 1: categorico simples
-    cout << "\n[MODULO 1] Buscando filmes do tipo 'short':" << endl;
-    auto start_q1 = chrono::high_resolution_clock::now();
-    vector<int> shorts = sistema.buscarPorTipo("short");
-    auto end_q1 = chrono::high_resolution_clock::now();
-    sistema.exibirResultados(shorts);
-    cout << "Tempo M1: " << chrono::duration<double, milli>(end_q1 - start_q1).count() << " ms" << endl;
+    int opcao = -1;
 
-    // teste modulo 1: busca Composta (and)
-    cout << "\n[MODULO 1] Buscando filmes do tipo 'short' AND genero 'Comedy':" << endl;
-    vector<int> comedias = sistema.buscarPorGenero("Comedy");
-    vector<int> short_comedies = OperacoesConjuntos::intersecao(shorts, comedias);
-    sistema.exibirResultados(short_comedies);
+    while (opcao != 0) {
+        cout << "\nMenu de Testes \n";
+        cout << "1. Modulo 1 -  Busca Categorica (Por Genero)\n";
+        cout << "2. Modulo 1 - Busca Categorica (Por Tipo de Filme)\n";
+        cout << "3. Modulo 2 - Busca Numerica em Arvore (Por Intervalo de Duracao)\n";
+        cout << "4. Modulos 1 e 2 - Busca Composta (Duracao AND Genero)\n";
+        cout << "5. Modulo 4 - Testar Busca Binaria (Inconsistencia de ID)\n";
+        cout << "0. Sair do programa\n";
+        cout << "Escolha uma opcao: ";
+        
+        if (!(cin >> opcao)) {
+            limparBuffer();
+            continue;
+        }
+        
+        limparBuffer(); // limpa o enter 
 
-    // teste modulo 2: intervalo numerico em arvore
-    cout << "\n[MODULO 2] Buscando filmes entre 120 e 150 minutos:" << endl;
-    auto start_q2 = chrono::high_resolution_clock::now();
-    vector<int> duracao_longa = sistema.buscarPorDuracao(120, 150);
-    auto end_q2 = chrono::high_resolution_clock::now();
-    sistema.exibirResultados(duracao_longa);
-    cout << "Tempo M2: " << chrono::duration<double, milli>(end_q2 - start_q2).count() << " ms" << endl;
+        if (opcao == 1) {
+            string genero;
+            cout << "Digite o genero (Ex: Comedy, Drama, Documentary): ";
+            getline(cin, genero);
+            
+            auto start = chrono::high_resolution_clock::now();
+            vector<int> resultados = sistema.buscarPorGenero(genero);
+            auto end = chrono::high_resolution_clock::now();
+            
+            sistema.exibirResultados(resultados);
+            cout << "Tempo de resposta: " << fixed << setprecision(0) 
+                 << chrono::duration<double, std::nano>(end - start).count() << " ns\n";
 
-    // teste modulo1 + modulo 2: intervalo + categorico
-    cout << "\n[MODULOS 1 e 2 COMBINADOS] Filmes (120-150 min) AND do genero 'Drama':" << endl;
-    vector<int> dramas = sistema.buscarPorGenero("Drama");
-    // intersecao exige vetores ordenados. para garantir:
-    vector<int> combinados = OperacoesConjuntos::intersecao(duracao_longa, dramas);
-    sistema.exibirResultados(combinados);
+        } 
+        else if (opcao == 2) {
+            string tipo;
+            cout << "Digite o tipo (Ex: short, movie, tvEpisode): ";
+            getline(cin, tipo);
+            
+            auto start = chrono::high_resolution_clock::now();
+            vector<int> resultados = sistema.buscarPorTipo(tipo);
+            auto end = chrono::high_resolution_clock::now();
+            
+            sistema.exibirResultados(resultados);
+            cout << "Tempo de resposta: " << fixed << setprecision(0) 
+                 << chrono::duration<double, std::nano>(end - start).count() << " ns\n";
+        }
+        else if (opcao == 3) {
+            int min_dur, max_dur;
+            cout << "Digite a duracao minima (minutos): ";
+            cin >> min_dur;
+            cout << "Digite a duracao maxima (minutos): ";
+            cin >> max_dur;
+            
+            auto start = chrono::high_resolution_clock::now();
+            vector<int> resultados = sistema.buscarPorDuracao(min_dur, max_dur);
+            auto end = chrono::high_resolution_clock::now();
+            
+            sistema.exibirResultados(resultados);
+            cout << "Tempo de resposta (Arvore): " << fixed << setprecision(2) 
+                 << chrono::duration<double, milli>(end - start).count() << " ms\n";
+        }
+        else if (opcao == 4) {
+            int min_dur, max_dur;
+            string genero;
+            cout << "Digite a duracao minima (minutos): ";
+            cin >> min_dur;
+            cout << "Digite a duracao maxima (minutos): ";
+            cin >> max_dur;
+            limparBuffer();
+            cout << "Digite o genero para cruzar os dados (Ex: Drama): ";
+            getline(cin, genero);
+            
+            auto start = chrono::high_resolution_clock::now();
+            vector<int> res_duracao = sistema.buscarPorDuracao(min_dur, max_dur);
+            vector<int> res_genero = sistema.buscarPorGenero(genero);
+            vector<int> cruzamento = OperacoesConjuntos::intersecao(res_duracao, res_genero);
+            auto end = chrono::high_resolution_clock::now();
+            
+            sistema.exibirResultados(cruzamento);
+            cout << "Tempo de resposta (Arvore + Conjuntos): " << fixed << setprecision(2) 
+                 << chrono::duration<double, milli>(end - start).count() << " ms\n";
+        }
+        else if (opcao == 5) {
+            int id_teste;
+            cout << "digite o ID de um filme para testar: ";
+            cin >> id_teste;
+            limparBuffer(); // limpa o buffer apos ler o id
+            sistema.demonstrarModulo4(id_teste);
+        }
+        else if (opcao != 0) {
+            cout << "opcao invalida!\n";
+        }
+    }
 
-   // teste modulo 4: busca binaria com sucessor
-    // passando um ID que pode ou nao existir para ver o sistema corrigir
-    sistema.demonstrarModulo4(9194990); 
-
-    // teste com um id que nao existe na base para ver a correcao automatica
-    // O ID 7917519 não existe (a base salta do 7917518 direto para o 7917520).
-    // O sistema deve associar automaticamente ao 7917520.
-    sistema.demonstrarModulo4(7917519); 
-
-    // um id gigantesco que eh maior do que qualquer filme na base.
-    // o sistema deve associar ao ultimo filme disponivel.
-    sistema.demonstrarModulo4(99999999);
-
-    cout << "Fim dos testes." << endl;
-
+    cout << "\nEncerrando o sistema. Obrigado!\n";
     return 0;
 }

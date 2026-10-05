@@ -3,10 +3,18 @@
 #include <fstream>
 #include <sstream>
 #include <chrono>
+#include <algorithm> // necessario para transformar em minusculas
+#include <cctype>    // necessario para o ::tolower
 
 using namespace std;
 
-// modulo 4: regra de inconsistencia de ids (busca binaria O(log n))
+// func auxil para converter string para minusculas
+string toLowerCase(string str) {
+    transform(str.begin(), str.end(), str.begin(), ::tolower);
+    return str;
+}
+
+// modulo 4 regra de inconsistencia de ids (busca binaria O(log n))
 // encontra o id exato, ou o codigo maior mais próximo
 
 int Buscador::buscarSucessorID(int id_procurado) {
@@ -16,7 +24,7 @@ int Buscador::buscarSucessorID(int id_procurado) {
     int fim = filmes.size() - 1;
     int melhor_indice = -1; // guarda o candidato a sucessor
 
-    // Caso especial 1: O id procurado eh maior que o ultimo filme da base
+    //  o id procurado eh maior que o ultimo filme da base
     if (id_procurado > filmes[fim].identificacao) {
         return fim; // Retorna o maior possível
     }
@@ -76,13 +84,13 @@ void Buscador::carregarDados(const string& path_filmes, const string& path_cinem
             string g;
             while (getline(gens, g, ',')) {
                 f.genero.push_back(g);
-                // Indexação para Módulo 1 (Categorias)
-                indice_generos[g].push_back(index_filme); 
+                // indexacao para modulo1 categoria - convertido para minusculas
+                indice_generos[toLowerCase(g)].push_back(index_filme); 
             }
         }
         
-        // indexacao para modulo 1 (tipos)
-        indice_tipos[f.tipo_do_filme].push_back(index_filme);
+        // indexacao para modulo 1 tipos - convertido para minusculas
+        indice_tipos[toLowerCase(f.tipo_do_filme)].push_back(index_filme);
 
         // indexação em arvore para modulo 2 (intervalos)
         if (f.duracao > 0) arvore_duracao.inserir(f.duracao, index_filme);
@@ -130,12 +138,16 @@ void Buscador::carregarDados(const string& path_filmes, const string& path_cinem
 
 // implementacoes do modulo 1
 vector<int> Buscador::buscarPorTipo(const string& tipo) {
-    if (indice_tipos.find(tipo) != indice_tipos.end()) return indice_tipos[tipo];
+    // converte a busca do usuario para minusculas
+    string t_lower = toLowerCase(tipo);
+    if (indice_tipos.find(t_lower) != indice_tipos.end()) return indice_tipos[t_lower];
     return {};
 }
 
 vector<int> Buscador::buscarPorGenero(const string& genero) {
-    if (indice_generos.find(genero) != indice_generos.end()) return indice_generos[genero];
+    // converte a busca do usuario para minusculas
+    string g_lower = toLowerCase(genero);
+    if (indice_generos.find(g_lower) != indice_generos.end()) return indice_generos[g_lower];
     return {};
 }
 
@@ -157,14 +169,15 @@ void Buscador::exibirResultados(const vector<int>& indices) {
         cout << " - [" << f.identificacao << "] " << f.titulo_original 
              << " (" << f.ano_estreia << ") - " << f.duracao << " min" << endl;
     }
-    if (indices.size() > 5) cout << "   ... e mais " << (indices.size() - 5) << " filmes." << endl;
+    
+    if (indices.size() > 10) cout << "   ... e mais " << (indices.size() - 10) << " filmes." << endl;
 }
 
 
 // teste modulo 4
 
 void Buscador::demonstrarModulo4(int id_procurado) {
-    cout << "\n[MODULO 4] Testando Regra de Inconsistencia para o ID: " << id_procurado << endl;
+    cout << "\nMODULO 4 - Testando Regra de Inconsistencia para o ID: " << id_procurado << endl;
     
     auto start = chrono::high_resolution_clock::now();
     int index = buscarSucessorID(id_procurado);
