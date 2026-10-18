@@ -5,7 +5,7 @@
 #include <limits>
 
 //g++ main.cpp Buscador.cpp -o meutrabalho.exe
-//.\meutrabalho.exe
+//.\trabalhotbo.exe
 
 using namespace std;
 
