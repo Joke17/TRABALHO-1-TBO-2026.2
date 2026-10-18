@@ -16,22 +16,17 @@ string toLowerCase(string str) {
 
 // modulo 4 regra de inconsistencia de ids (busca binaria O(log n))
 // encontra o id exato, ou o codigo maior mais próximo
-
 int Buscador::buscarSucessorID(int id_procurado) {
     if (filmes.empty()) return -1;
-
     int inicio = 0;
     int fim = filmes.size() - 1;
     int melhor_indice = -1; // guarda o candidato a sucessor
-
     //  o id procurado eh maior que o ultimo filme da base
     if (id_procurado > filmes[fim].identificacao) {
         return fim; // retorna o maior possível
     }
-
     while (inicio <= fim) {
         int meio = inicio + (fim - inicio) / 2;
-
         if (filmes[meio].identificacao == id_procurado) {
             return meio; // encontrou exatamente
         }
@@ -43,24 +38,20 @@ int Buscador::buscarSucessorID(int id_procurado) {
             inicio = meio + 1; // o valor atual eh muito pequeno
         }
     }
-
     return melhor_indice; // retorna o sucessor mais proximo
 }
 
 void Buscador::carregarDados(const string& path_filmes, const string& path_cinemas) {
     ifstream arq_filmes(path_filmes);
     ifstream arq_cinemas(path_cinemas);
-
     if (!arq_filmes.is_open() || !arq_cinemas.is_open()) {
         cout << "Erro ao abrir os arquivos!" << endl;
         return;
     }
-
     string linha;
     getline(arq_filmes, linha); // pula cabecalho
-
     int index_filme = 0;
-    
+   
     // leitura dos filmess
     while (getline(arq_filmes, linha)) {
         stringstream ss(linha);
@@ -68,7 +59,6 @@ void Buscador::carregarDados(const string& path_filmes, const string& path_cinem
         vector<string> campos;
         while (getline(ss, campo, '\t')) campos.push_back(campo);
         if (campos.size() < 9) continue;
-
         Filme f;
         f.identificacao = stoi(campos[0].substr(2));
         f.tipo_do_filme = campos[1];
@@ -78,30 +68,29 @@ void Buscador::carregarDados(const string& path_filmes, const string& path_cinem
         f.ano_estreia = (campos[5] == "\\N") ? 0 : stoi(campos[5]);
         f.ano_fim = (campos[6] == "\\N") ? 0 : stoi(campos[6]);
         f.duracao = (campos[7] == "\\N") ? 0 : stoi(campos[7]);
-
         if (campos[8] != "\\N") {
             stringstream gens(campos[8]);
             string g;
             while (getline(gens, g, ',')) {
                 f.genero.push_back(g);
                 // indexacao para modulo1 categoria - convertido para minusculas
-                indice_generos[toLowerCase(g)].push_back(index_filme); 
+                indice_generos[toLowerCase(g)].push_back(index_filme);
             }
         }
-        
+       
         // indexacao para modulo 1 tipos - convertido para minusculas
         indice_tipos[toLowerCase(f.tipo_do_filme)].push_back(index_filme);
-
         // indexação em arvore para modulo 2 (intervalos)
         if (f.duracao > 0) arvore_duracao.inserir(f.duracao, index_filme);
         if (f.ano_estreia > 0) arvore_ano.inserir(f.ano_estreia, index_filme);
-
         filmes.push_back(f);
         index_filme++;
     }
 
     // leitura dos cineminhas
     getline(arq_cinemas, linha); // pula cabecalho
+    int index_cinema = 0; // NOVO: Contador de indice para cinemas
+
     while (getline(arq_cinemas, linha)) {
         stringstream ss(linha);
         string campo;
@@ -111,9 +100,8 @@ void Buscador::carregarDados(const string& path_filmes, const string& path_cinem
             if(!campo.empty() && campo[0] == ' ') campo = campo.substr(1);
             campos.push_back(campo);
         }
-        
+       
         if (campos.size() < 6) continue;
-
         Cinema c;
         c.ID = campos[0];
         c.nome = campos[1];
@@ -121,10 +109,13 @@ void Buscador::carregarDados(const string& path_filmes, const string& path_cinem
         c.coord_Y = (campos[3] == "\\N") ? 0 : stod(campos[3]);
         c.preco = (campos[4] == "\\N") ? 0 : stod(campos[4]);
 
+        // NOVO: MODULO 5 - Adiciona o preco do cinema a arvore especifica
+        if (c.preco > 0) arvore_preco_cinema.inserir(c.preco, index_cinema);
+
         for (size_t i = 5; i < campos.size(); i++) {
             if (campos[i] != "\\N" && campos[i].length() > 2) {
                 int id_filme_procurado = stoi(campos[i].substr(2));
-                
+               
                 // modelo 4 aplicado aqui, resolve inconsistencias na hora do load
                 int index_corrigido = buscarSucessorID(id_filme_procurado);
                 if (index_corrigido != -1) {
@@ -133,6 +124,7 @@ void Buscador::carregarDados(const string& path_filmes, const string& path_cinem
             }
         }
         cinemas.push_back(c);
+        index_cinema++; // NOVO
     }
 }
 
@@ -160,34 +152,58 @@ vector<int> Buscador::buscarPorAno(int min_ano, int max_ano) {
     return arvore_ano.buscarIntervalo(min_ano, max_ano);
 }
 
+
+// modulo 5 - implementacoes extras de cinema e exibicao parcial
+
+vector<int> Buscador::buscarCinemasPorPrecoMaximo(double max_preco) {
+    return arvore_preco_cinema.buscarIntervalo(0, max_preco);
+}
+
+vector<int> Buscador::buscarTopFilmesMaisLongos(int quantidade) {
+    return arvore_duracao.obterMaiores(quantidade);
+}
+
+vector<int> Buscador::buscarTopCinemasMaisBaratos(int quantidade) {
+    return arvore_preco_cinema.obterMenores(quantidade);
+}
+
 // funcao auxiliar de exibicao
 void Buscador::exibirResultados(const vector<int>& indices) {
     cout << "Encontrados " << indices.size() << " filmes." << endl;
     int limit = min((int)indices.size(), 10); // mostra no maximo 10 ou N pra nao floodar a tela
     for (int i = 0; i < limit; i++) {
         Filme& f = filmes[indices[i]];
-        cout << " - [" << f.identificacao << "] " << f.titulo_original 
+        cout << " - [" << f.identificacao << "] " << f.titulo_original
              << " (" << f.ano_estreia << ") - " << f.duracao << " min" << endl;
     }
-    
+   
     if (indices.size() > 10) cout << "   ... e mais " << (indices.size() - 10) << " filmes." << endl;
 }
 
+// exibicao especifica para Cinemas
+void Buscador::exibirResultadosCinemas(const vector<int>& indices) {
+    cout << "Encontrados " << indices.size() << " cinemas." << endl;
+    int limit = min((int)indices.size(), 10);
+    for (int i = 0; i < limit; i++) {
+        Cinema& c = cinemas[indices[i]];
+        cout << " - [" << c.ID << "] " << c.nome << " - Preco: $" << c.preco << endl;
+    }
+    if (indices.size() > 10) cout << "   ... e mais " << (indices.size() - 10) << " cinemas." << endl;
+}
 
 // teste modulo 4
-
 void Buscador::demonstrarModulo4(int id_procurado) {
     cout << "\nMODULO 4 - Testando Regra de Inconsistencia para o ID: " << id_procurado << endl;
-    
+   
     auto start = chrono::high_resolution_clock::now();
     int index = buscarSucessorID(id_procurado);
     auto end = chrono::high_resolution_clock::now();
-    
+   
     if (index != -1) {
         Filme& f = filmes[index];
-        cout << "-> ID associado pelo sistema: [" << f.identificacao << "] " 
+        cout << "-> ID associado pelo sistema: [" << f.identificacao << "] "
              << f.titulo_original << endl;
-        
+       
         if (f.identificacao == id_procurado) {
             cout << "-> Conclusao: O ID exato existia na base." << endl;
         } else {
@@ -196,7 +212,7 @@ void Buscador::demonstrarModulo4(int id_procurado) {
     } else {
         cout << "Nenhum sucessor encontrado na base." << endl;
     }
-    
-    cout << "Tempo M4 (Busca Binaria O(log n)): " 
+   
+    cout << "Tempo M4 (Busca Binaria O(log n)): "
          << chrono::duration<double, milli>(end - start).count() << " ms\n" << endl;
 }
