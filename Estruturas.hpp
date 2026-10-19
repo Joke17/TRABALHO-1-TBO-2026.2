@@ -46,7 +46,7 @@ public:
         if (v1.empty() || v2.empty()) return resultado;
 
         // NOVO: OTIMIZACAO EXTREMA (Evita O(N+M) quando um vetor eh muito menor que o outro)
-        if (v1.size() * 10 < v2.size()) {
+        if (v1.size() * 10 < v2.size()) { // pra cada valor de v1 é feita uma busca binária em v2
             for (int val : v1) {
                 if (buscaBinaria(v2, val)) resultado.push_back(val);
             }
