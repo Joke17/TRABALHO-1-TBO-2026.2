@@ -47,6 +47,7 @@ int main() {
          << chrono::duration<double, milli>(fim_read - ini_read).count() << " ms.\n\n";
     pausarTela();
 
+    auto ini_exec_total = chrono::high_resolution_clock::now();
     int opcao = -1;
     while (opcao != 0) {
         limparTela();
@@ -237,6 +238,9 @@ int main() {
             pausarTela();
         }
     }
+    auto fim_exec_total = chrono::high_resolution_clock::now();
+    cout << "Tempo total de execução " << fixed << setprecision(2)
+         << chrono::duration<double, milli>(fim_exec_total - ini_exec_total).count() << " ms.\n\n";
     cout << "\nEncerrando o sistema. Obrigado!\n";
     return 0;
 }
