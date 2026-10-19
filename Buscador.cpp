@@ -20,7 +20,7 @@ int Buscador::buscarSucessorID(int id_procurado) {
     if (filmes.empty()) return -1;
     int inicio = 0;
     int fim = filmes.size() - 1;
-    int melhor_indice = -1; // guarda o candidato a sucessor
+    int melhor_indice = -1; 
     //  o id procurado eh maior que o ultimo filme da base
     if (id_procurado > filmes[fim].identificacao) {
         return fim; // retorna o maior possível
@@ -32,7 +32,7 @@ int Buscador::buscarSucessorID(int id_procurado) {
         }
         else if (filmes[meio].identificacao > id_procurado) {
             melhor_indice = meio; // eh um candidato a sucessor
-            fim = meio - 1;       // tenta achar um sucessor ainda mais próximo (menor)
+            fim = meio - 1;       
         }
         else {
             inicio = meio + 1; // o valor atual eh muito pequeno
@@ -128,7 +128,7 @@ void Buscador::carregarDados(const string& path_filmes, const string& path_cinem
     }
 }
 
-// implementacoes do modulo 1
+// modulo 1
 vector<int> Buscador::buscarPorTipo(const string& tipo) {
     // converte a busca do usuario para minusculas
     string t_lower = toLowerCase(tipo);

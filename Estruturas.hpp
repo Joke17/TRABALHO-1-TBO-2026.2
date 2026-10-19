@@ -40,12 +40,10 @@ private:
     }
 
 public:
-    // retorna elementos que estão em ambos os vetores (AND)
     static vector<int> intersecao(const vector<int>& v1, const vector<int>& v2) {
         vector<int> resultado;
         if (v1.empty() || v2.empty()) return resultado;
 
-        // NOVO: OTIMIZACAO EXTREMA (Evita O(N+M) quando um vetor eh muito menor que o outro)
         if (v1.size() * 10 < v2.size()) { // pra cada valor de v1 é feita uma busca binária em v2
             for (int val : v1) {
                 if (buscaBinaria(v2, val)) resultado.push_back(val);
@@ -70,7 +68,6 @@ public:
         }
         return resultado;
     }
-    // retorna elementos que estao em qualquer um dos vetores (OR)
     static vector<int> uniao(const vector<int>& v1, const vector<int>& v2) {
         vector<int> resultado;
         int i = 0, j = 0;
@@ -91,7 +88,7 @@ public:
 // modulo 2: arvore binaria de busca para intervalos
 class NoArvore {
 public:
-    double chave; //alterado para double para suportar os precos do modulo 5
+    double chave; //double para suportar os precos do modulo 5
     vector<int> indices_filmes; // filmes que possuem essa chave
     NoArvore* esq;
     NoArvore* dir;
@@ -120,16 +117,13 @@ private:
     }
     void buscarIntervalo(NoArvore* no, double min, double max, vector<int>& resultados) { 
         if (no == nullptr) return;
-        // se a chave atual for maior que o minimo, pode haver elementos a esquerda
         if (no->chave > min)
             buscarIntervalo(no->esq, min, max, resultados);
-        // se esta dentro do intervalo, adicionamos
         if (no->chave >= min && no->chave <= max) {
             for (int idx : no->indices_filmes) {
                 resultados.push_back(idx);
             }
         }
-        // se a chave atual for menor que o maximo, pode haver elementos a direita
         if (no->chave < max)
             buscarIntervalo(no->dir, min, max, resultados);
     }
