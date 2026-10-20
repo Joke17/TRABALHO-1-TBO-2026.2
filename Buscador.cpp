@@ -3,8 +3,8 @@
 #include <fstream>
 #include <sstream>
 #include <chrono>
-#include <algorithm> // necessario para transformar em minusculas
-#include <cctype>    // necessario para o ::tolower
+#include <algorithm> // transformar em minusculas
+#include <cctype>    //tolower
 
 using namespace std;
 
@@ -14,8 +14,8 @@ string toLowerCase(string str) {
     return str;
 }
 
-// modulo 4 regra de inconsistencia de ids (busca binaria O(log n))
-// encontra o id exato, ou o codigo maior mais próximo
+// modulo 4 inconsistencia de ids
+// encontra o id ou o codigo maior mais próximo
 int Buscador::buscarSucessorID(int id_procurado) {
     if (filmes.empty()) return -1;
     int inicio = 0;
@@ -31,7 +31,7 @@ int Buscador::buscarSucessorID(int id_procurado) {
             return meio; // encontrou exatamente
         }
         else if (filmes[meio].identificacao > id_procurado) {
-            melhor_indice = meio; // eh um candidato a sucessor
+            melhor_indice = meio; // possuvel sucessor
             fim = meio - 1;       
         }
         else {
@@ -73,12 +73,12 @@ void Buscador::carregarDados(const string& path_filmes, const string& path_cinem
             string g;
             while (getline(gens, g, ',')) {
                 f.genero.push_back(g);
-                // indexacao para modulo1 categoria - convertido para minusculas
+                // modulo1 categoria - convertido para minusculas
                 indice_generos[toLowerCase(g)].push_back(index_filme);
             }
         }
        
-        // indexacao para modulo 1 tipos - convertido para minusculas
+        // modulo 1 tipos - convertido para minusculas
         indice_tipos[toLowerCase(f.tipo_do_filme)].push_back(index_filme);
         // indexação em arvore para modulo 2 (intervalos)
         if (f.duracao > 0) arvore_duracao.inserir(f.duracao, index_filme);
@@ -89,14 +89,14 @@ void Buscador::carregarDados(const string& path_filmes, const string& path_cinem
 
     // leitura dos cineminhas
     getline(arq_cinemas, linha); // pula cabecalho
-    int index_cinema = 0; // NOVO: Contador de indice para cinemas
+    int index_cinema = 0; // contador de indice para cinemas
 
     while (getline(arq_cinemas, linha)) {
         stringstream ss(linha);
         string campo;
         vector<string> campos;
         while (getline(ss, campo, ',')) {
-            // remove espacos extras que vem apos a virgula
+            // remove espacos extrasdepois da virgula
             if(!campo.empty() && campo[0] == ' ') campo = campo.substr(1);
             campos.push_back(campo);
         }
@@ -109,14 +109,13 @@ void Buscador::carregarDados(const string& path_filmes, const string& path_cinem
         c.coord_Y = (campos[3] == "\\N") ? 0 : stod(campos[3]);
         c.preco = (campos[4] == "\\N") ? 0 : stod(campos[4]);
 
-        // NOVO: MODULO 5 - Adiciona o preco do cinema a arvore especifica
+        // Modulo 5 - adiciona o preco do cinema a arvore especifica
         if (c.preco > 0) arvore_preco_cinema.inserir(c.preco, index_cinema);
 
         for (size_t i = 5; i < campos.size(); i++) {
             if (campos[i] != "\\N" && campos[i].length() > 2) {
                 int id_filme_procurado = stoi(campos[i].substr(2));
                
-                // modelo 4 aplicado aqui, resolve inconsistencias na hora do load
                 int index_corrigido = buscarSucessorID(id_filme_procurado);
                 if (index_corrigido != -1) {
                     c.filmes_ids.push_back(filmes[index_corrigido].identificacao);
@@ -124,7 +123,7 @@ void Buscador::carregarDados(const string& path_filmes, const string& path_cinem
             }
         }
         cinemas.push_back(c);
-        index_cinema++; // NOVO
+        index_cinema++; 
     }
 }
 
@@ -143,7 +142,7 @@ vector<int> Buscador::buscarPorGenero(const string& genero) {
     return {};
 }
 
-// implementacoes do modulo 2
+//modulo 2
 vector<int> Buscador::buscarPorDuracao(int min_minutos, int max_minutos) {
     return arvore_duracao.buscarIntervalo(min_minutos, max_minutos);
 }

@@ -135,7 +135,7 @@ int main() {
             auto start = chrono::high_resolution_clock::now();
             vector<int> cruzamento;
 
-            // verificacao do cache (O(1))
+            // verificacao do cache 
             if (cache.existe(chave)) {
                 cruzamento = cache.obter(chave);
                 cout << "\n[!] RESULTADO RECUPERADO DO CACHE EM O(1)!\n";
@@ -143,7 +143,7 @@ int main() {
                 vector<int> res_duracao = sistema.buscarPorDuracao(min_dur, max_dur);
                 vector<int> res_genero = sistema.buscarPorGenero(genero);
                 cruzamento = OperacoesConjuntos::intersecao(res_duracao, res_genero);
-                cache.guardar(chave, cruzamento); // Salva no cache
+                cache.guardar(chave, cruzamento); // salva no cache
             }
 
             auto end = chrono::high_resolution_clock::now();

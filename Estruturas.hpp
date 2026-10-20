@@ -7,7 +7,7 @@
 using namespace std;
 
 
-// Retorna buscas repetidas em tempo O(1)
+// retorma buscas repetidas 
 class CacheConsultas {
 private:
     unordered_map<string, vector<int>> historico;
@@ -23,11 +23,10 @@ public:
     }
 };
 
-// modulo 1: funcoes de conjuntos (uniao e intersecao)
-// ambas assumem que os vetores de indices estão ordenados
+// modulo 1 uniao e intersecao
 class OperacoesConjuntos {
 private:
-    // NOVO: Funcao auxiliar de Busca Binaria para otimizar intersecoes extremas
+    // funcao auxiliar de busca binaria
     static bool buscaBinaria(const vector<int>& v, int alvo) {
         int ini = 0, fim = v.size() - 1;
         while (ini <= fim) {
@@ -85,10 +84,10 @@ public:
     }
 };
 
-// modulo 2: arvore binaria de busca para intervalos
+// modulo 2 arvore binaria de busca para intervalos
 class NoArvore {
 public:
-    double chave; //double para suportar os precos do modulo 5
+    double chave; //double pra suportar os precos do modulo 5
     vector<int> indices_filmes; // filmes que possuem essa chave
     NoArvore* esq;
     NoArvore* dir;
@@ -111,7 +110,7 @@ private:
         else if (chave > no->chave)
             no->dir = inserir(no->dir, chave, indice);
         else
-            no->indices_filmes.push_back(indice); // se a chave ja existe, so adiciona o filme
+            no->indices_filmes.push_back(indice); // se a chave ja existe so adiciona o filme
            
         return no;
     }
@@ -128,7 +127,6 @@ private:
             buscarIntervalo(no->dir, min, max, resultados);
     }
 
-    //  modulo 5 - percorre a arvore pegando os menores valores primeiro (In-Order)
     void buscarMenores(NoArvore* no, int& qtd_restante, vector<int>& resultados) {
         if (no == nullptr || qtd_restante <= 0) return;
         buscarMenores(no->esq, qtd_restante, resultados);
@@ -142,8 +140,6 @@ private:
         }
         buscarMenores(no->dir, qtd_restante, resultados);
     }
-
-    // modulo 5 - percorre a arvore pegando os maiores valores primeiro (Reverse In-Order)
     void buscarMaiores(NoArvore* no, int& qtd_restante, vector<int>& resultados) {
         if (no == nullptr || qtd_restante <= 0) return;
         buscarMaiores(no->dir, qtd_restante, resultados);

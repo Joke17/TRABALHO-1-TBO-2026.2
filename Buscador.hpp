@@ -10,17 +10,17 @@ class Buscador {
 private:
     vector<Filme> filmes;
     vector<Cinema> cinemas;
-    // indices para o modulo 1 (busca categorica)
+    // indices  modulo 1 
     map<string, vector<int>> indice_tipos;
     map<string, vector<int>> indice_generos;
-    // arvores para o modulo 2 (busca numerica)
+    // arvores  modulo 2 
     ArvoreBusca arvore_duracao;
     ArvoreBusca arvore_ano;
     
     // modulo 5 - arvore para os precos dos cinemas
     ArvoreBusca arvore_preco_cinema;
 
-    // modulo 4 busca binaria otimizada
+    // modulo 4 busca binaria 
     int buscarSucessorID(int id_procurado);
 
 public:
@@ -44,7 +44,7 @@ public:
     // exibicao
     void exibirResultados(const vector<int>& indices);
     
-    // NOVO: Funcao para exibir resultados especificos de Cinemas
+    //exibir resultados especificos de Cinemas
     void exibirResultadosCinemas(const vector<int>& indices);
 };
 #endif
